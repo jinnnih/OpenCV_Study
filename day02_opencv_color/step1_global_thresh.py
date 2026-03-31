@@ -61,3 +61,4 @@ while True:  # 무한반복
 
 # 마무리, 모든창 닫기
 cv. destroyAllWindows()
+
