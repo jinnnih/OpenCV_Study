@@ -14,9 +14,12 @@ gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 # ============================================================
 # 1. Canny 에지 검출
 # ============================================================
+# threshold1 = 100   # 낮은 임계값
+# threshold2 = 200  # 높은 임계값
 threshold1 = 50   # 낮은 임계값
 threshold2 = 150  # 높은 임계값
-#
+
+
 # Canny 에지 검출 적용
 edges = cv.Canny(gray, threshold1, threshold2)
 
