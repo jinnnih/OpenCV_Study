@@ -113,7 +113,7 @@ while(1):
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
     
-
+ 
 # 리소스 해제 
 cap.release()
 
