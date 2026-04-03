@@ -74,6 +74,8 @@ if not ret:
 
 # 상태 변수
 prev_state = False
+status_text = "INITIALIZING..." # 초기값 설정
+color = (255, 255, 255)         # 초기색상 (흰색)
 
 
 # 반복:
@@ -99,13 +101,13 @@ while(1):
             color = (0, 0, 255) # 빨간색
             send_command(ser, 'C') # 닫힘
             print(">>> [SEND] C")
-            
+
         prev_state = is_detected # 현재 상태를 저장
 
     # 상태를 터미널과 화면에 표시
     cv.putText(frame, status_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, color, 2)
     cv.imshow('frame', frame)
-    print('frame', frame)
+    
 
     #   'q' 키 입력 시 루프 종료
     if cv.waitKey(1) & 0xFF == ord('q'):
