@@ -44,22 +44,29 @@ def nothing(x):
 cv.namedWindow('settings')
  
 # create trackbars for color change
-cv.createTrackbar('H_min','settings',0,179,nothing)
+cv.createTrackbar('H_min','settings',29,179,nothing)
 cv.createTrackbar('H_max','settings',179,179,nothing)
-cv.createTrackbar('S_min','settings',50,255,nothing)
+cv.createTrackbar('S_min','settings',179,255,nothing)
 cv.createTrackbar('S_max','settings',255,255,nothing)
-cv.createTrackbar('V_min','settings',50,255,nothing)
+cv.createTrackbar('V_min','settings',68,255,nothing)
 cv.createTrackbar('V_max','settings',255,255,nothing)
  
 # create switch for ON/OFF functionality
 switch = '0 : OFF \n1 : ON'
 cv.createTrackbar(switch, 'settings',0,1,nothing)
 
+# roi 영역지정 (화면의 세로 200~480, 가로 100~500 영역만 사용)
+roi_y1, roi_y2 = 200, 480
+roi_x1, roi_x2 = 100, 500
+
 # 반복:
 while(1):
     # 웹캠에서 프레임 읽기
     ret, frame = cap.read()
     if not ret: break
+
+    # ROI 추출 (슬라이싱)
+    roi = frame[roi_y1:roi_y2, roi_x1:roi_x2]
 
     # 트랙바 불러오기
     h_min = cv.getTrackbarPos('H_min', 'settings')
@@ -73,7 +80,7 @@ while(1):
     upper_color = np.array([h_max, s_max, v_max])
 
     # 함수 호출
-    is_detected, area, mask = detect_color(frame, lower_color, upper_color)
+    is_detected, area, mask = detect_color(roi, lower_color, upper_color)
 
     # 결과 로직처리
     if is_detected:
@@ -85,10 +92,14 @@ while(1):
         status_text = "NOT DETECTED"
         color = (0, 0, 255) # 빨간색
 
+    # 결과 표시
+    cv.rectangle(frame, (100, 100), (500, 400), (255, 0, 0), 2) # 파란색 사각형
+
     # 상태를 터미널과 화면에 표시
     cv.putText(frame, status_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, color, 2)
     cv.imshow('frame', frame)
     cv.imshow('mask', mask)
+    cv.imshow('roi', roi)
 
     #   'q' 키 입력 시 루프 종료
     if cv.waitKey(1) & 0xFF == ord('q'):
