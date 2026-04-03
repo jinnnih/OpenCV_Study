@@ -72,6 +72,9 @@ if not ret:
     cap.release()
     exit()
 
+# 상태 변수
+prev_state = False
+
 
 # 반복:
 while(1):
@@ -83,14 +86,21 @@ while(1):
     is_detected, area = detect_color(frame)
 
     # 결과 로직처리
-    if is_detected:
-        print(f"✅ DETECTED! 면적: {area}")
-        status_text = f"DETECTED ({area})"
-        color = (0, 255, 0) # 초록색
-    else:
-        print(f"❌ NOT DETECTED. 면적: {area}")
-        status_text = "NOT DETECTED"
-        color = (0, 0, 255) # 빨간색
+    if is_detected != prev_state : # 상태가 변했을 때만 실행
+        if is_detected:
+            print(f"✅ DETECTED! 면적: {area}")
+            status_text = f"DETECTED ({area})"
+            color = (0, 255, 0) # 초록색
+            send_command(ser, 'O') # 열림
+            print(">>> [SEND] O")
+        else:
+            print(f"❌ NOT DETECTED. 면적: {area}")
+            status_text = "NOT DETECTED"
+            color = (0, 0, 255) # 빨간색
+            send_command(ser, 'C') # 닫힘
+            print(">>> [SEND] C")
+            
+        prev_state = is_detected # 현재 상태를 저장
 
     # 상태를 터미널과 화면에 표시
     cv.putText(frame, status_text, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, color, 2)
