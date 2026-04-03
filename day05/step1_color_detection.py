@@ -65,4 +65,4 @@ while(1):
 # 리소스 해제 
 cap.release()
 
-cv.destroyAllWindows()
+cv.destroyAllWindows() 
