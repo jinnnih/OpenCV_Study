@@ -12,20 +12,22 @@ def send_command(ser, command):
 
 
 # 아두이노 시리얼 연결 (COM 포트, 9600 속도)
+try:
+    ser = serial.Serial('COM4', 9600, timeout = 1)
+    time.sleep(2) # 연결 안정화 대기
+    print("✅ 아두이노 연결 성공!")
+except Exception as e :
+    print(f"❌ 아두이노 연결 실패: {e}")
+    ser = None
 
 # --- 기대값 확인 ---
-# 참고: ser=None으로 설정하여 아두이노가 없어도 테스트 가능
-# 현재 상태
-ser = None # 아두이노 연결 객체가 '없음'으로 설정됨
-
-# send_command()가 아직 구현되지 않았으므로 False 반환
 result = send_command(ser, 'O')
 
-# RED 단계: 이 부분이 실행되어야 함 (즉, FAIL이 출력되어야 함)
+
 if result:
-    print("✅ PASS: 아두이노 명령 전송 성공!")
+    print("✅ PASS: 아두이노 명령 전송 성공!") # GREEN단계
 else:
-    print("❌ FAIL: send_command() 함수가 아직 구현되지 않았습니다")
+    print("❌ FAIL: send_command() 함수가 아직 구현되지 않았습니다") # RED단계
 
 # 추가로 'C' 명령도 테스트
 result = send_command(ser, 'C')
