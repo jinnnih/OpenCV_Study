@@ -1,33 +1,28 @@
 import cv2 as cv
 import numpy as np
-import math
 
-# Sudoku 이미지 로드
-img = cv.imread('sudoku.png')
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-edges = cv.Canny(gray, 50, 150, apertureSize=3)
+# 이미지 로드
+img = cv.imread('road3-1.jpg')
+scale = 0.5
+img_resized = cv.resize(img, (int(img.shape[1]*scale), int(img.shape[0]*scale)))
+gray = cv.cvtColor(img_resized, cv.COLOR_BGR2GRAY)
+edges = cv.Canny(gray, 100, 200, apertureSize=3)
 
-# 극좌표 방식
-lines = cv.HoughLines(edges, 1, np.pi/180, 200)
+# 다양한 threshold 값으로 실험
+thresholds = [10, 20 , 22, 25] # 이중에서 22가 베스트
 
-# 극좌표 → 데카르트 좌표 변환 후 그리기
-result = img.copy()
-if lines is not None:
-    for line in lines:
-        rho, theta = line[0]
-        a = np.cos(theta)
-        b = np.sin(theta)
-        x0 = a * rho
-        y0 = b * rho
-        x1 = int(x0 + 1000 * (-b))
-        y1 = int(y0 + 1000 * (a))
-        x2 = int(x0 - 1000 * (-b))
-        y2 = int(y0 - 1000 * (a))
-        
-        cv.line(result, (x1, y1), (x2, y2), (0, 255, 0), 2)
+for threshold in thresholds:
+    lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180,
+                           threshold=threshold, minLineLength=30, maxLineGap=10)
+    
+    result = img_resized.copy()
+    if lines is not None:
+        for line in lines:
+            x1, y1, x2, y2 = line[0]
+            cv.line(result, (x1, y1), (x2, y2), (0, 255, 0), 2)
+        print(f"threshold={threshold} → {len(lines)}개 직선")
+        cv.imshow(f'threshold={threshold}', result)
 
-cv.imshow('HoughLines (Polar)', result)
 cv.waitKey(0)
 cv.destroyAllWindows()
-
-print(f"Detected {len(lines)} lines (polar form)")
+ 

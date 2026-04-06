@@ -1,27 +1,36 @@
 import cv2 as cv
 import numpy as np
 
-# Sudoku 이미지 로드
-img = cv.imread('sudoku.png')
-gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-edges = cv.Canny(gray, 50, 150, apertureSize=3)
+# 이미지 로드
+img = cv.imread('road3-1.jpg')
+scale = 0.5
+img_resized = cv.resize(img, (int(img.shape[1]*scale), int(img.shape[0]*scale)))
+gray = cv.cvtColor(img_resized, cv.COLOR_BGR2GRAY)
 
-# 다양한 threshold 값으로 실험
-thresholds = [30, 50, 70, 100]
+# 다양한 Canny 임계값으로 실험
+canny_params = [
+    (340, 400),    # 낮은 임계값 → 더 많은 에지
+    (440, 440),   # 중간 임계값 (기본값)
+    (380, 500),   # 높은 임계값 → 강한 에지만
+]
 
-for threshold in thresholds:
-    lines = cv.HoughLinesP(edges, rho=1, theta=np.pi/180,
-                           threshold=threshold, minLineLength=50, maxLineGap=10)
+for lower, upper in canny_params:
+    edges = cv.Canny(gray, lower, upper, apertureSize=3)
     
-    result = img.copy()
+    # HoughLinesP 적용
+    lines = cv.HoughLinesP(edges, 1, np.pi/180, threshold=33, 
+                           minLineLength=30, maxLineGap=10)
+    
+    result = img_resized.copy()
     if lines is not None:
         for line in lines:
             x1, y1, x2, y2 = line[0]
             cv.line(result, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        
-        print(f"threshold={threshold} → {len(lines)} lines detected")
-        cv.imshow(f'threshold={threshold}', result)
+        print(f"Canny({lower}, {upper}) → 검출된 직선: {len(lines)}개")
+        cv.imshow(f'Canny({lower}, {upper})', result)
+    else:
+        print(f"Canny({lower}, {upper}) → 검출된 직선 없음")
 
 cv.waitKey(0)
 cv.destroyAllWindows()
-
+  
