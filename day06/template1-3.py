@@ -14,7 +14,7 @@ def get_sample(filename):
 # 이미지 로드
 img = cv.imread(get_sample('messi5.jpg'))
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-template = gray[80:230, 20:150]
+template = gray[50:150, 200:280]
 
 # Template Matching
 result = cv.matchTemplate(gray, template, cv.TM_CCOEFF_NORMED)
